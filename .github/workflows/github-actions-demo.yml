@@ -15,3 +15,48 @@ jobs:
         run: |
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
+      
+      name: CI
+
+on:
+  push:
+    branches:
+    - main
+    tags:
+    - '!*'
+  pull_request:
+
+jobs:
+  test:
+    name: Node ${{ matrix.node }} and ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node: [14, 16]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Cancel Previous Runs
+      uses: styfle/cancel-workflow-action@0.9.1
+      with:
+        access_token: ${{ github.token }}
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node }}
+      uses: actions/setup-node@v3
+      with:
+        cache: yarn
+        node-version: ${{ matrix.node }}
+        check-latest: true
+    - name: Print Node Version
+      run: node --version
+    - name: Install Dependencies
+      run: yarn install
+    - name: Build Test Binary
+      run: yarn build-test-binary
+    - name: Build
+      run: yarn build
+    - name: Run Tests
+      run: yarn test
+    - name: Coverage
+      if: matrix.os == 'ubuntu-latest' && matrix.node == 14 # only run once
+      run: yarn test-coverage
