@@ -1,7 +1,7 @@
-name: Pull Request Example
+name: Push Request Example
 
 on:
-  pull_request:
+  push_request:
     branches:
       - main
     paths:
