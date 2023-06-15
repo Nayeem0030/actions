@@ -1,12 +1,16 @@
 name: Hello World
 
-on:
-  workflow_dispatch:
+on: [push]
 
 jobs:
-  print-hello-world:
+  build:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Say hello
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Say Hello
+        run: echo "Hello, World!"
+
         run: echo "Hello World"
